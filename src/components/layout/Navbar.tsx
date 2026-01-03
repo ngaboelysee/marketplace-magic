@@ -64,19 +64,23 @@ export function Navbar() {
               <Heart className="h-5 w-5" />
               <span className="sr-only">Wishlist</span>
             </Button>
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground relative">
-              <ShoppingBag className="h-5 w-5" />
-              {cartCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-luxe-gold text-[10px] font-semibold text-primary-foreground">
-                  {cartCount}
-                </span>
-              )}
-              <span className="sr-only">Cart</span>
-            </Button>
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
-              <User className="h-5 w-5" />
-              <span className="sr-only">Account</span>
-            </Button>
+            <Link to="/cart">
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground relative">
+                <ShoppingBag className="h-5 w-5" />
+                {cartCount > 0 && (
+                  <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-luxe-gold text-[10px] font-semibold text-primary-foreground">
+                    {cartCount}
+                  </span>
+                )}
+                <span className="sr-only">Cart</span>
+              </Button>
+            </Link>
+            <Link to="/auth">
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+                <User className="h-5 w-5" />
+                <span className="sr-only">Account</span>
+              </Button>
+            </Link>
           </div>
         </div>
       </nav>
@@ -131,18 +135,22 @@ export function Navbar() {
                   <Button variant="ghost" size="icon" className="text-muted-foreground">
                     <Heart className="h-5 w-5" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="text-muted-foreground relative">
-                    <ShoppingBag className="h-5 w-5" />
-                    {cartCount > 0 && (
-                      <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-luxe-gold text-[10px] font-semibold text-primary-foreground">
-                        {cartCount}
-                      </span>
-                    )}
-                  </Button>
+                  <Link to="/cart" onClick={() => setMobileMenuOpen(false)}>
+                    <Button variant="ghost" size="icon" className="text-muted-foreground relative">
+                      <ShoppingBag className="h-5 w-5" />
+                      {cartCount > 0 && (
+                        <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-luxe-gold text-[10px] font-semibold text-primary-foreground">
+                          {cartCount}
+                        </span>
+                      )}
+                    </Button>
+                  </Link>
                 </div>
-                <Button variant="luxe" className="w-full">
-                  Sign In
-                </Button>
+                <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="luxe" className="w-full">
+                    Sign In
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
