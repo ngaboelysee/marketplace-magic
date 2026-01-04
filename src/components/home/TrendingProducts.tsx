@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Star, Heart, ShoppingBag, BadgeCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 const trendingProducts = [
   {
@@ -97,6 +98,8 @@ const trendingProducts = [
 ];
 
 export function TrendingProducts() {
+  const { formatPrice } = useCurrency();
+  
   return (
     <section className="luxe-section bg-secondary/30">
       <div className="luxe-container">
@@ -185,11 +188,11 @@ export function TrendingProducts() {
                 {/* Price */}
                 <div className="mt-3 flex items-baseline gap-2">
                   <span className="text-lg font-semibold text-foreground">
-                    ${product.price}
+                    {formatPrice(product.price)}
                   </span>
                   {product.originalPrice && (
                     <span className="text-sm text-muted-foreground line-through">
-                      ${product.originalPrice}
+                      {formatPrice(product.originalPrice)}
                     </span>
                   )}
                 </div>
