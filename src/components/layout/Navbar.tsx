@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Menu, X, ShoppingBag, Search, User, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { CurrencySelector } from "@/components/CurrencySelector";
 
 const navigation = [
   { name: "Shop", href: "/shop" },
@@ -55,7 +56,8 @@ export function Navbar() {
           </div>
 
           {/* Desktop actions */}
-          <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-4">
+          <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:items-center lg:gap-x-2">
+            <CurrencySelector />
             <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
               <Search className="h-5 w-5" />
               <span className="sr-only">Search</span>
@@ -128,23 +130,26 @@ export function Navbar() {
                 ))}
               </div>
               <div className="py-6 space-y-4">
-                <div className="flex items-center gap-4">
-                  <Button variant="ghost" size="icon" className="text-muted-foreground">
-                    <Search className="h-5 w-5" />
-                  </Button>
-                  <Button variant="ghost" size="icon" className="text-muted-foreground">
-                    <Heart className="h-5 w-5" />
-                  </Button>
-                  <Link to="/cart" onClick={() => setMobileMenuOpen(false)}>
-                    <Button variant="ghost" size="icon" className="text-muted-foreground relative">
-                      <ShoppingBag className="h-5 w-5" />
-                      {cartCount > 0 && (
-                        <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-luxe-gold text-[10px] font-semibold text-primary-foreground">
-                          {cartCount}
-                        </span>
-                      )}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <Button variant="ghost" size="icon" className="text-muted-foreground">
+                      <Search className="h-5 w-5" />
                     </Button>
-                  </Link>
+                    <Button variant="ghost" size="icon" className="text-muted-foreground">
+                      <Heart className="h-5 w-5" />
+                    </Button>
+                    <Link to="/cart" onClick={() => setMobileMenuOpen(false)}>
+                      <Button variant="ghost" size="icon" className="text-muted-foreground relative">
+                        <ShoppingBag className="h-5 w-5" />
+                        {cartCount > 0 && (
+                          <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-luxe-gold text-[10px] font-semibold text-primary-foreground">
+                            {cartCount}
+                          </span>
+                        )}
+                      </Button>
+                    </Link>
+                  </div>
+                  <CurrencySelector />
                 </div>
                 <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="luxe" className="w-full">
