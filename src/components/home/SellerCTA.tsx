@@ -71,7 +71,7 @@ export function SellerCTA() {
                 asChild
                 className="border-background/20 text-background hover:bg-background/10 hover:text-background"
               >
-                <Link to="/seller-guidelines">Learn More</Link>
+                <Link to="/sell">Learn More</Link>
               </Button>
             </div>
           </div>
