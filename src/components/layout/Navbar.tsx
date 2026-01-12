@@ -6,9 +6,12 @@ import { cn } from "@/lib/utils";
 import { CurrencySelector } from "@/components/CurrencySelector";
 
 const navigation = [
+  { name: "Home", href: "/" },
   { name: "Shop", href: "/shop" },
   { name: "Categories", href: "/categories" },
   { name: "Trending", href: "/trending" },
+  { name: "About", href: "/about" },
+  { name: "Contact", href: "/contact" },
   { name: "Sell on LUXE", href: "/sell" },
 ];
 
