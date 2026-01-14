@@ -10,7 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Package, Store, TrendingUp, Settings, Plus, Eye } from 'lucide-react';
+import { Package, Store, TrendingUp, Settings, Plus, Eye, Wallet } from 'lucide-react';
+import { PayoutsTab } from '@/components/dashboard/PayoutsTab';
 
 interface StoreData {
   id: string;
@@ -19,6 +20,10 @@ interface StoreData {
   description: string | null;
   is_approved: boolean;
   is_active: boolean;
+  subaccount_id: string | null;
+  bank_name: string | null;
+  account_number: string | null;
+  business_name: string | null;
 }
 
 interface ProductData {
@@ -57,7 +62,7 @@ export default function Dashboard() {
   const fetchStore = async () => {
     const { data: storeData } = await supabase
       .from('stores')
-      .select('*')
+      .select('id, name, slug, description, is_approved, is_active, subaccount_id, bank_name, account_number, business_name')
       .eq('owner_id', user?.id)
       .maybeSingle();
 
@@ -200,6 +205,10 @@ export default function Dashboard() {
                 <Package className="h-4 w-4 mr-2" />
                 Products
               </TabsTrigger>
+              <TabsTrigger value="payouts">
+                <Wallet className="h-4 w-4 mr-2" />
+                Payouts
+              </TabsTrigger>
               <TabsTrigger value="settings">
                 <Settings className="h-4 w-4 mr-2" />
                 Settings
@@ -270,6 +279,16 @@ export default function Dashboard() {
                   </div>
                 )}
               </div>
+            </TabsContent>
+
+            <TabsContent value="payouts">
+              <PayoutsTab
+                storeId={store.id}
+                subaccountId={store.subaccount_id}
+                bankName={store.bank_name}
+                accountNumber={store.account_number}
+                businessName={store.business_name}
+              />
             </TabsContent>
 
             <TabsContent value="settings">
