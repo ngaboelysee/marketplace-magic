@@ -10,8 +10,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Package, Store, TrendingUp, Settings, Plus, Eye, Wallet } from 'lucide-react';
+import { Package, Store, TrendingUp, Settings, Plus, Eye, Wallet, Instagram } from 'lucide-react';
 import { PayoutsTab } from '@/components/dashboard/PayoutsTab';
+import { InstagramTab } from '@/components/dashboard/InstagramTab';
 
 interface StoreData {
   id: string;
@@ -24,6 +25,8 @@ interface StoreData {
   bank_name: string | null;
   account_number: string | null;
   business_name: string | null;
+  instagram_username: string | null;
+  instagram_connected_at: string | null;
 }
 
 interface ProductData {
@@ -62,7 +65,7 @@ export default function Dashboard() {
   const fetchStore = async () => {
     const { data: storeData } = await supabase
       .from('stores')
-      .select('id, name, slug, description, is_approved, is_active, subaccount_id, bank_name, account_number, business_name')
+      .select('id, name, slug, description, is_approved, is_active, subaccount_id, bank_name, account_number, business_name, instagram_username, instagram_connected_at')
       .eq('owner_id', user?.id)
       .maybeSingle();
 
@@ -209,6 +212,10 @@ export default function Dashboard() {
                 <Wallet className="h-4 w-4 mr-2" />
                 Payouts
               </TabsTrigger>
+              <TabsTrigger value="instagram">
+                <Instagram className="h-4 w-4 mr-2" />
+                Instagram
+              </TabsTrigger>
               <TabsTrigger value="settings">
                 <Settings className="h-4 w-4 mr-2" />
                 Settings
@@ -288,6 +295,15 @@ export default function Dashboard() {
                 bankName={store.bank_name}
                 accountNumber={store.account_number}
                 businessName={store.business_name}
+              />
+            </TabsContent>
+
+            <TabsContent value="instagram">
+              <InstagramTab
+                storeId={store.id}
+                instagramUsername={store.instagram_username}
+                instagramConnectedAt={store.instagram_connected_at}
+                onConnectionChange={fetchStore}
               />
             </TabsContent>
 

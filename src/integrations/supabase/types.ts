@@ -73,6 +73,53 @@ export type Database = {
         }
         Relationships: []
       }
+      draft_products: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string
+          instagram_permalink: string | null
+          instagram_post_id: string
+          name: string
+          status: string
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url: string
+          instagram_permalink?: string | null
+          instagram_post_id: string
+          name: string
+          status?: string
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string
+          instagram_permalink?: string | null
+          instagram_post_id?: string
+          name?: string
+          status?: string
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "draft_products_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_items: {
         Row: {
           created_at: string
@@ -260,6 +307,10 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          instagram_access_token: string | null
+          instagram_connected_at: string | null
+          instagram_user_id: string | null
+          instagram_username: string | null
           is_active: boolean | null
           is_approved: boolean | null
           logo_url: string | null
@@ -277,6 +328,10 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          instagram_access_token?: string | null
+          instagram_connected_at?: string | null
+          instagram_user_id?: string | null
+          instagram_username?: string | null
           is_active?: boolean | null
           is_approved?: boolean | null
           logo_url?: string | null
@@ -294,6 +349,10 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          instagram_access_token?: string | null
+          instagram_connected_at?: string | null
+          instagram_user_id?: string | null
+          instagram_username?: string | null
           is_active?: boolean | null
           is_approved?: boolean | null
           logo_url?: string | null
