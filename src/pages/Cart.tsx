@@ -182,7 +182,7 @@ export default function Cart() {
               </Link>
 
               <p className="text-xs text-muted-foreground text-center mt-4">
-                Secure checkout powered by Stripe
+                Secure checkout powered by Flutterwave
               </p>
             </div>
           </div>
