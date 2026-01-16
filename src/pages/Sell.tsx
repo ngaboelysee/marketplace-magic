@@ -292,28 +292,28 @@ export default function Sell() {
                     </h3>
                     <div className="bg-secondary/50 rounded-lg p-6 mb-6">
                       <div className="flex items-center gap-4 mb-4">
-                        <div className="w-12 h-12 rounded-lg bg-[#635BFF] flex items-center justify-center">
-                          <span className="text-white font-bold text-lg">S</span>
+                        <div className="w-12 h-12 rounded-lg bg-[#F5A623] flex items-center justify-center">
+                          <span className="text-white font-bold text-lg">F</span>
                         </div>
                         <div>
-                          <h4 className="font-semibold text-foreground">Stripe Connect</h4>
+                          <h4 className="font-semibold text-foreground">Flutterwave</h4>
                           <p className="text-sm text-muted-foreground">
-                            Secure payment processing powered by Stripe
+                            Secure payment processing powered by Flutterwave
                           </p>
                         </div>
                       </div>
                       <p className="text-sm text-muted-foreground mb-4">
-                        Connect your Stripe account to receive payments directly. 
-                        If you don't have one, we'll help you create it.
+                        Set up your bank account to receive payments directly. 
+                        You can manage your payout settings in the dashboard.
                       </p>
                       <Button variant="luxe">
-                        Connect with Stripe
+                        Set Up Payments
                       </Button>
                     </div>
                     <div className="space-y-4">
                       <h4 className="font-medium text-foreground">Payment Methods You'll Accept:</h4>
                       <div className="flex flex-wrap gap-3">
-                        {["Visa", "Mastercard", "American Express", "Apple Pay", "Google Pay"].map((method) => (
+                        {["Bank Transfer", "Card Payment", "Mobile Money", "USSD"].map((method) => (
                           <span key={method} className="px-3 py-1.5 bg-secondary rounded-lg text-sm text-foreground">
                             {method}
                           </span>
