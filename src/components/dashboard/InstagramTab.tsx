@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Instagram, RefreshCw, Check, X, ExternalLink, Image, Loader2 } from "lucide-react";
+import { Instagram, RefreshCw, Check, X, ExternalLink, Image, Loader2, CheckCircle2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -208,62 +208,94 @@ export function InstagramTab({
   const approvedDrafts = drafts.filter(d => d.status === 'approved');
   const rejectedDrafts = drafts.filter(d => d.status === 'rejected');
 
+  // Sync Instructions Component - Bilingual
+  const SyncInstructions = () => (
+    <div className="mt-6 p-4 bg-secondary/30 rounded-xl border border-border">
+      <p className="text-sm text-foreground font-medium mb-1">
+        Posts with <Badge variant="secondary" className="mx-1 font-mono">#luxe</Badge> will automatically appear in your shop
+      </p>
+      <p className="text-sm text-muted-foreground italic">
+        Ibirimo hashtag ya <span className="font-mono text-foreground">#luxe</span> bizahita bigaragara mu iduka ryawe
+      </p>
+    </div>
+  );
+
   if (!isConnected) {
     return (
-      <Card>
-        <CardHeader className="text-center">
-          <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center mb-4">
-            <Instagram className="h-8 w-8 text-white" />
+      <Card className="overflow-hidden">
+        <CardHeader className="text-center pb-4">
+          <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-[#833AB4] via-[#E1306C] to-[#F77737] flex items-center justify-center mb-4 shadow-lg">
+            <Instagram className="h-10 w-10 text-white" />
           </div>
-          <CardTitle>Connect Instagram</CardTitle>
-          <CardDescription>
+          <CardTitle className="font-display text-2xl">Connect Instagram</CardTitle>
+          <CardDescription className="text-base">
             Link your Instagram account to automatically import posts as product drafts.
-            <br />
-            Use <Badge variant="secondary">#PostToStore</Badge> in your captions to import.
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex justify-center">
+        <CardContent className="flex flex-col items-center pb-8">
           <Button 
             onClick={handleConnect}
             disabled={connecting}
-            className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 hover:opacity-90"
+            size="lg"
+            className="bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] hover:opacity-90 text-white font-semibold px-8 py-6 text-base shadow-lg hover:shadow-xl transition-all duration-300"
           >
             {connecting ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                 Connecting...
               </>
             ) : (
               <>
-                <Instagram className="mr-2 h-4 w-4" />
+                <Instagram className="mr-2 h-5 w-5" />
                 Connect Instagram
               </>
             )}
           </Button>
+          <SyncInstructions />
         </CardContent>
       </Card>
     );
   }
+
+  // Sync Instructions Component - Bilingual (for connected state)
+  const SyncInstructionsConnected = () => (
+    <div className="p-4 bg-secondary/30 rounded-xl border border-border">
+      <p className="text-sm text-foreground font-medium mb-1">
+        Posts with <Badge variant="secondary" className="mx-1 font-mono">#luxe</Badge> will automatically appear in your shop
+      </p>
+      <p className="text-sm text-muted-foreground italic">
+        Ibirimo hashtag ya <span className="font-mono text-foreground">#luxe</span> bizahita bigaragara mu iduka ryawe
+      </p>
+    </div>
+  );
 
   return (
     <div className="space-y-6">
       {/* Connection Status */}
       <Card>
         <CardContent className="pt-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center">
-                <Instagram className="h-6 w-6 text-white" />
+              <div className="relative">
+                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#833AB4] via-[#E1306C] to-[#F77737] flex items-center justify-center shadow-md">
+                  <Instagram className="h-7 w-7 text-white" />
+                </div>
+                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center border-2 border-background">
+                  <CheckCircle2 className="h-4 w-4 text-white" />
+                </div>
               </div>
               <div>
-                <p className="font-semibold">@{instagramUsername}</p>
+                <div className="flex items-center gap-2">
+                  <p className="font-semibold text-foreground text-lg">Instagram Connected</p>
+                  <CheckCircle2 className="h-5 w-5 text-green-500" />
+                </div>
                 <p className="text-sm text-muted-foreground">
-                  Connected {instagramConnectedAt ? new Date(instagramConnectedAt).toLocaleDateString() : ''}
+                  @{instagramUsername} • Connected {instagramConnectedAt ? new Date(instagramConnectedAt).toLocaleDateString() : ''}
                 </p>
               </div>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={handleSync} disabled={syncing}>
+              <Button variant="outline" onClick={handleSync} disabled={syncing} className="flex-1 sm:flex-none">
                 {syncing ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
@@ -271,10 +303,13 @@ export function InstagramTab({
                 )}
                 <span className="ml-2">Sync Posts</span>
               </Button>
-              <Button variant="ghost" onClick={handleDisconnect}>
+              <Button variant="ghost" onClick={handleDisconnect} className="text-muted-foreground hover:text-destructive">
                 Disconnect
               </Button>
             </div>
+          </div>
+          <div className="mt-4">
+            <SyncInstructionsConnected />
           </div>
         </CardContent>
       </Card>
@@ -303,7 +338,7 @@ export function InstagramTab({
                 <Image className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>No pending drafts</p>
                 <p className="text-sm mt-1">
-                  Post on Instagram with <Badge variant="outline">#PostToStore</Badge> and sync
+                  Post on Instagram with <Badge variant="outline" className="font-mono">#luxe</Badge> and sync
                 </p>
               </CardContent>
             </Card>
