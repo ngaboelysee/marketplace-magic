@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { 
   Store, 
   TrendingUp, 
@@ -12,7 +13,10 @@ import {
   Users, 
   ChevronRight,
   Upload,
-  Check
+  Check,
+  Instagram,
+  Loader2,
+  CheckCircle2
 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -49,6 +53,9 @@ const steps = [
 
 export default function Sell() {
   const [currentStep, setCurrentStep] = useState(1);
+  const [instagramConnecting, setInstagramConnecting] = useState(false);
+  const [instagramConnected, setInstagramConnected] = useState(false);
+  const [instagramUsername, setInstagramUsername] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     businessName: "",
     email: "",
@@ -60,6 +67,16 @@ export default function Sell() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleInstagramConnect = () => {
+    setInstagramConnecting(true);
+    // Simulate OAuth flow - in production this would redirect to Instagram OAuth
+    setTimeout(() => {
+      setInstagramConnecting(false);
+      setInstagramConnected(true);
+      setInstagramUsername("your_instagram");
+    }, 1500);
   };
 
   return (
@@ -233,6 +250,62 @@ export default function Sell() {
                         value={formData.website}
                         onChange={handleInputChange}
                       />
+                    </div>
+
+                    {/* Instagram Connect Section */}
+                    <div className="pt-6 border-t border-border">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#833AB4] via-[#E1306C] to-[#F77737] flex items-center justify-center shadow-md">
+                              <Instagram className="h-5 w-5 text-white" />
+                            </div>
+                            <div>
+                              <h4 className="font-semibold text-foreground">Connect Instagram (Optional)</h4>
+                              <p className="text-sm text-muted-foreground">
+                                Import products directly from your posts
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        {!instagramConnected ? (
+                          <Button 
+                            type="button"
+                            onClick={handleInstagramConnect}
+                            disabled={instagramConnecting}
+                            className="bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] hover:opacity-90 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+                          >
+                            {instagramConnecting ? (
+                              <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Connecting...
+                              </>
+                            ) : (
+                              <>
+                                <Instagram className="mr-2 h-4 w-4" />
+                                Connect Instagram
+                              </>
+                            )}
+                          </Button>
+                        ) : (
+                          <div className="flex items-center gap-2 px-4 py-2 bg-green-50 dark:bg-green-950/30 rounded-lg border border-green-200 dark:border-green-800">
+                            <CheckCircle2 className="h-5 w-5 text-green-500" />
+                            <span className="font-medium text-green-700 dark:text-green-400">
+                              @{instagramUsername}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Bilingual Instructions */}
+                      <div className="mt-4 p-4 bg-secondary/30 rounded-xl border border-border">
+                        <p className="text-sm text-foreground font-medium mb-1">
+                          Posts with <Badge variant="secondary" className="mx-1 font-mono">#luxe</Badge> will automatically appear in your shop
+                        </p>
+                        <p className="text-sm text-muted-foreground italic">
+                          Ibirimo hashtag ya <span className="font-mono text-foreground">#luxe</span> bizahita bigaragara mu iduka ryawe
+                        </p>
+                      </div>
                     </div>
                   </div>
                 )}
