@@ -16,7 +16,9 @@ import {
   Check,
   Instagram,
   Loader2,
-  CheckCircle2
+  CheckCircle2,
+  X,
+  ImagePlus
 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -56,6 +58,7 @@ export default function Sell() {
   const [instagramConnecting, setInstagramConnecting] = useState(false);
   const [instagramConnected, setInstagramConnected] = useState(false);
   const [instagramUsername, setInstagramUsername] = useState<string | null>(null);
+  const [productImages, setProductImages] = useState<{ file: File; preview: string }[]>([]);
   const [formData, setFormData] = useState({
     businessName: "",
     email: "",
@@ -77,6 +80,27 @@ export default function Sell() {
       setInstagramConnected(true);
       setInstagramUsername("your_instagram");
     }, 1500);
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const newImages = Array.from(files).map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+
+    setProductImages((prev) => [...prev, ...newImages].slice(0, 5)); // Max 5 images
+  };
+
+  const removeImage = (index: number) => {
+    setProductImages((prev) => {
+      const newImages = [...prev];
+      URL.revokeObjectURL(newImages[index].preview); // Clean up memory
+      newImages.splice(index, 1);
+      return newImages;
+    });
   };
 
   return (
@@ -335,15 +359,58 @@ export default function Sell() {
                     </div>
                     <div className="space-y-2">
                       <Label>Product Images *</Label>
-                      <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-luxe-gold/50 transition-colors cursor-pointer">
-                        <Upload className="h-10 w-10 text-muted-foreground mx-auto mb-4" />
+                      
+                      {/* Image Previews */}
+                      {productImages.length > 0 && (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-4">
+                          {productImages.map((img, index) => (
+                            <div key={index} className="relative aspect-square rounded-lg overflow-hidden border border-border group">
+                              <img 
+                                src={img.preview} 
+                                alt={`Product ${index + 1}`} 
+                                className="w-full h-full object-cover"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => removeImage(index)}
+                                className="absolute top-1 right-1 p-1 bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
+                              >
+                                <X className="h-4 w-4 text-white" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {/* Upload Area */}
+                      <label 
+                        htmlFor="productImages" 
+                        className="block border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-luxe-gold/50 transition-colors cursor-pointer"
+                      >
+                        <input
+                          id="productImages"
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          onChange={handleImageUpload}
+                          className="hidden"
+                        />
+                        <ImagePlus className="h-10 w-10 text-muted-foreground mx-auto mb-4" />
+                        <p className="text-sm font-medium text-foreground mb-1">
+                          Tap to add photos
+                        </p>
                         <p className="text-sm text-muted-foreground mb-2">
-                          Drag and drop your images here, or click to browse
+                          Select from Gallery, Camera, or Google Photos
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          PNG, JPG up to 10MB. Recommended: 1000x1000px
+                          PNG, JPG up to 10MB. Max 5 images. Recommended: 1000x1000px
                         </p>
-                      </div>
+                        {productImages.length > 0 && (
+                          <p className="text-xs text-luxe-gold mt-2 font-medium">
+                            {productImages.length}/5 images added
+                          </p>
+                        )}
+                      </label>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
