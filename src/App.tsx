@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AIAssistant } from "@/components/AIAssistant";
+import { Analytics } from "@vercel/analytics/react";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import Categories from "./pages/Categories";
@@ -47,6 +48,7 @@ const App = () => (
             </Routes>
             <AIAssistant />
           </BrowserRouter>
+          <Analytics />
         </TooltipProvider>
       </CurrencyProvider>
     </AuthProvider>
