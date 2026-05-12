@@ -21,7 +21,10 @@ import {
   ImagePlus
 } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const benefits = [
   {
@@ -54,11 +57,15 @@ const steps = [
 ];
 
 export default function Sell() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
   const [instagramConnecting, setInstagramConnecting] = useState(false);
   const [instagramConnected, setInstagramConnected] = useState(false);
   const [instagramUsername, setInstagramUsername] = useState<string | null>(null);
   const [productImages, setProductImages] = useState<{ file: File; preview: string }[]>([]);
+  const [launching, setLaunching] = useState(false);
   const [formData, setFormData] = useState({
     businessName: "",
     email: "",
@@ -67,9 +74,65 @@ export default function Sell() {
     category: "",
     website: "",
   });
+  const [productData, setProductData] = useState({
+    name: "",
+    price: "",
+    description: "",
+    inventory: "",
+    sku: "",
+  });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const launchStore = async () => {
+    if (!user) {
+      toast({ title: "Please sign in first", description: "Create an account or sign in as a vendor to launch your store." });
+      navigate("/auth");
+      return;
+    }
+    if (!formData.businessName.trim()) {
+      toast({ title: "Business name required", variant: "destructive" });
+      setCurrentStep(1);
+      return;
+    }
+    setLaunching(true);
+    const slug = formData.businessName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + "-" + Math.random().toString(36).slice(2, 6);
+
+    const { data: store, error: storeErr } = await supabase
+      .from("stores")
+      .insert({
+        owner_id: user.id,
+        name: formData.businessName,
+        slug,
+        business_name: formData.businessName,
+        description: formData.description || null,
+      })
+      .select("id")
+      .single();
+
+    if (storeErr || !store) {
+      setLaunching(false);
+      toast({ title: "Could not create store", description: storeErr?.message, variant: "destructive" });
+      return;
+    }
+
+    if (productData.name.trim() && productData.price) {
+      const productSlug = productData.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + "-" + Math.random().toString(36).slice(2, 6);
+      await supabase.from("products").insert({
+        store_id: store.id,
+        name: productData.name,
+        slug: productSlug,
+        description: productData.description || null,
+        price: Number(productData.price),
+        inventory_count: productData.inventory ? Number(productData.inventory) : 0,
+      });
+    }
+
+    setLaunching(false);
+    toast({ title: "Store created!", description: "Your store is pending admin approval." });
+    navigate("/dashboard");
   };
 
   const handleInstagramConnect = () => {
@@ -342,11 +405,15 @@ export default function Sell() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <Label htmlFor="productName">Product Name *</Label>
-                        <Input id="productName" placeholder="e.g., Handcrafted Leather Bag" />
+                        <Input id="productName" placeholder="e.g., Handcrafted Leather Bag"
+                          value={productData.name}
+                          onChange={(e) => setProductData({ ...productData, name: e.target.value })} />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="price">Price *</Label>
-                        <Input id="price" type="number" placeholder="0.00" />
+                        <Input id="price" type="number" placeholder="0.00"
+                          value={productData.price}
+                          onChange={(e) => setProductData({ ...productData, price: e.target.value })} />
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -355,6 +422,8 @@ export default function Sell() {
                         id="productDescription"
                         placeholder="Describe your product in detail..."
                         rows={4}
+                        value={productData.description}
+                        onChange={(e) => setProductData({ ...productData, description: e.target.value })}
                       />
                     </div>
                     <div className="space-y-2">
@@ -415,11 +484,15 @@ export default function Sell() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <Label htmlFor="inventory">Inventory Count</Label>
-                        <Input id="inventory" type="number" placeholder="10" />
+                        <Input id="inventory" type="number" placeholder="10"
+                          value={productData.inventory}
+                          onChange={(e) => setProductData({ ...productData, inventory: e.target.value })} />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="sku">SKU (optional)</Label>
-                        <Input id="sku" placeholder="e.g., LB-001" />
+                        <Input id="sku" placeholder="e.g., LB-001"
+                          value={productData.sku}
+                          onChange={(e) => setProductData({ ...productData, sku: e.target.value })} />
                       </div>
                     </div>
                   </div>
@@ -496,8 +569,8 @@ export default function Sell() {
                         </div>
                       </dl>
                     </div>
-                    <Button variant="luxe" size="lg" className="mt-6">
-                      Launch My Store
+                    <Button variant="luxe" size="lg" className="mt-6" onClick={launchStore} disabled={launching}>
+                      {launching ? (<><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Launching...</>) : "Launch My Store"}
                     </Button>
                   </div>
                 )}

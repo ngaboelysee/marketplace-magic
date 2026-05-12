@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Package, Store, TrendingUp, Settings, Plus, Eye, Wallet, Instagram } from 'lucide-react';
+import { Package, Store, TrendingUp, Settings, Plus, Eye, Wallet, Instagram, ShoppingBag, MapPin, Phone, Mail } from 'lucide-react';
 import { PayoutsTab } from '@/components/dashboard/PayoutsTab';
 import { InstagramTab } from '@/components/dashboard/InstagramTab';
 
@@ -38,12 +38,31 @@ interface ProductData {
   is_active: boolean;
 }
 
+interface OrderItemRow {
+  id: string;
+  quantity: number;
+  price: number;
+  product: { name: string; images: string[] | null } | null;
+  order: {
+    id: string;
+    status: string;
+    created_at: string;
+    customer_name: string | null;
+    customer_phone: string | null;
+    customer_email: string | null;
+    delivery_notes: string | null;
+    shipping_address: any;
+    total: number;
+  } | null;
+}
+
 export default function Dashboard() {
   const { user, role, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [store, setStore] = useState<StoreData | null>(null);
   const [products, setProducts] = useState<ProductData[]>([]);
+  const [orderItems, setOrderItems] = useState<OrderItemRow[]>([]);
   const [isCreatingStore, setIsCreatingStore] = useState(false);
   const [storeForm, setStoreForm] = useState({
     name: '',
@@ -72,6 +91,7 @@ export default function Dashboard() {
     if (storeData) {
       setStore(storeData);
       fetchProducts(storeData.id);
+      fetchOrders(storeData.id);
     }
   };
 
@@ -82,6 +102,15 @@ export default function Dashboard() {
       .eq('store_id', storeId);
 
     if (data) setProducts(data);
+  };
+
+  const fetchOrders = async (storeId: string) => {
+    const { data } = await supabase
+      .from('order_items')
+      .select('id, quantity, price, product:products(name,images), order:orders(id,status,created_at,customer_name,customer_phone,customer_email,delivery_notes,shipping_address,total)')
+      .eq('store_id', storeId)
+      .order('created_at', { ascending: false });
+    if (data) setOrderItems(data as any);
   };
 
   const createStore = async (e: React.FormEvent) => {
@@ -208,6 +237,10 @@ export default function Dashboard() {
                 <Package className="h-4 w-4 mr-2" />
                 Products
               </TabsTrigger>
+              <TabsTrigger value="orders">
+                <ShoppingBag className="h-4 w-4 mr-2" />
+                Orders
+              </TabsTrigger>
               <TabsTrigger value="payouts">
                 <Wallet className="h-4 w-4 mr-2" />
                 Payouts
@@ -283,6 +316,74 @@ export default function Dashboard() {
                         </span>
                       </div>
                     ))}
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="orders">
+              <div className="bg-card border border-border rounded-xl p-6">
+                <h3 className="font-semibold text-foreground mb-6">Incoming Orders</h3>
+                {orderItems.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-8">
+                    No orders yet. They'll appear here with full delivery details.
+                  </p>
+                ) : (
+                  <div className="space-y-4">
+                    {orderItems.map((item) => {
+                      const addr = item.order?.shipping_address || {};
+                      return (
+                        <div key={item.id} className="border border-border rounded-xl p-4 md:p-5 bg-secondary/30">
+                          <div className="flex flex-wrap justify-between gap-2 mb-3">
+                            <div>
+                              <p className="font-medium text-foreground">{item.product?.name}</p>
+                              <p className="text-sm text-muted-foreground">
+                                Qty {item.quantity} · ${Number(item.price).toFixed(2)} each
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <span className="inline-block text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 capitalize">
+                                {item.order?.status}
+                              </span>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {item.order?.created_at && new Date(item.order.created_at).toLocaleString()}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm border-t border-border pt-3">
+                            <div className="flex items-start gap-2">
+                              <Mail className="h-4 w-4 text-luxe-gold mt-0.5 shrink-0" />
+                              <div>
+                                <p className="text-muted-foreground text-xs">Customer</p>
+                                <p className="text-foreground">{item.order?.customer_name || '—'}</p>
+                                <p className="text-foreground">{item.order?.customer_email || '—'}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-start gap-2">
+                              <Phone className="h-4 w-4 text-luxe-gold mt-0.5 shrink-0" />
+                              <div>
+                                <p className="text-muted-foreground text-xs">Phone</p>
+                                <p className="text-foreground">{item.order?.customer_phone || '—'}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-start gap-2 sm:col-span-2">
+                              <MapPin className="h-4 w-4 text-luxe-gold mt-0.5 shrink-0" />
+                              <div>
+                                <p className="text-muted-foreground text-xs">Delivery address</p>
+                                <p className="text-foreground">
+                                  {[addr.street, addr.district, addr.city, addr.country].filter(Boolean).join(", ") || '—'}
+                                </p>
+                                {item.order?.delivery_notes && (
+                                  <p className="text-muted-foreground text-xs mt-1 italic">
+                                    Notes: {item.order.delivery_notes}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
