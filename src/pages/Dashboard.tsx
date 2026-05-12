@@ -237,6 +237,10 @@ export default function Dashboard() {
                 <Package className="h-4 w-4 mr-2" />
                 Products
               </TabsTrigger>
+              <TabsTrigger value="orders">
+                <ShoppingBag className="h-4 w-4 mr-2" />
+                Orders
+              </TabsTrigger>
               <TabsTrigger value="payouts">
                 <Wallet className="h-4 w-4 mr-2" />
                 Payouts
