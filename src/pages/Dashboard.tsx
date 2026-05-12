@@ -38,12 +38,31 @@ interface ProductData {
   is_active: boolean;
 }
 
+interface OrderItemRow {
+  id: string;
+  quantity: number;
+  price: number;
+  product: { name: string; images: string[] | null } | null;
+  order: {
+    id: string;
+    status: string;
+    created_at: string;
+    customer_name: string | null;
+    customer_phone: string | null;
+    customer_email: string | null;
+    delivery_notes: string | null;
+    shipping_address: any;
+    total: number;
+  } | null;
+}
+
 export default function Dashboard() {
   const { user, role, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [store, setStore] = useState<StoreData | null>(null);
   const [products, setProducts] = useState<ProductData[]>([]);
+  const [orderItems, setOrderItems] = useState<OrderItemRow[]>([]);
   const [isCreatingStore, setIsCreatingStore] = useState(false);
   const [storeForm, setStoreForm] = useState({
     name: '',
@@ -72,6 +91,7 @@ export default function Dashboard() {
     if (storeData) {
       setStore(storeData);
       fetchProducts(storeData.id);
+      fetchOrders(storeData.id);
     }
   };
 
@@ -82,6 +102,15 @@ export default function Dashboard() {
       .eq('store_id', storeId);
 
     if (data) setProducts(data);
+  };
+
+  const fetchOrders = async (storeId: string) => {
+    const { data } = await supabase
+      .from('order_items')
+      .select('id, quantity, price, product:products(name,images), order:orders(id,status,created_at,customer_name,customer_phone,customer_email,delivery_notes,shipping_address,total)')
+      .eq('store_id', storeId)
+      .order('created_at', { ascending: false });
+    if (data) setOrderItems(data as any);
   };
 
   const createStore = async (e: React.FormEvent) => {
