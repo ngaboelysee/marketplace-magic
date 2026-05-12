@@ -30,7 +30,8 @@ export default function Contact() {
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.from("contact_messages").insert(parsed.data);
+    const { name, email, subject, message } = parsed.data;
+    const { error } = await supabase.from("contact_messages").insert({ name, email, subject, message });
     setSubmitting(false);
     if (error) {
       toast({ title: "Could not send", description: error.message, variant: "destructive" });
