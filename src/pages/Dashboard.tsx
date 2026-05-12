@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Package, Store, TrendingUp, Settings, Plus, Eye, Wallet, Instagram } from 'lucide-react';
+import { Package, Store, TrendingUp, Settings, Plus, Eye, Wallet, Instagram, ShoppingBag, MapPin, Phone, Mail } from 'lucide-react';
 import { PayoutsTab } from '@/components/dashboard/PayoutsTab';
 import { InstagramTab } from '@/components/dashboard/InstagramTab';
 
