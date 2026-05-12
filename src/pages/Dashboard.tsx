@@ -389,6 +389,7 @@ export default function Dashboard() {
               </div>
             </TabsContent>
 
+            <TabsContent value="payouts">
               <PayoutsTab
                 storeId={store.id}
                 subaccountId={store.subaccount_id}
