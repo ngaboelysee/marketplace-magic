@@ -73,6 +73,33 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          subject: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          subject?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          subject?: string | null
+        }
+        Relationships: []
+      }
       draft_products: {
         Row: {
           created_at: string
@@ -175,6 +202,10 @@ export type Database = {
       orders: {
         Row: {
           created_at: string
+          customer_email: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          delivery_notes: string | null
           id: string
           shipping_address: Json | null
           status: string
@@ -184,6 +215,10 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          delivery_notes?: string | null
           id?: string
           shipping_address?: Json | null
           status?: string
@@ -193,6 +228,10 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          delivery_notes?: string | null
           id?: string
           shipping_address?: Json | null
           status?: string
